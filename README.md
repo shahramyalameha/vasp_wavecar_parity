@@ -26,13 +26,28 @@ It already has a precompiled excutable program "parity.x", or you may compile by
 and running by
 > /dir/to/program/parity.x
 
+## Using 2D version
+
+- The 2d version control by parameter '-d2', running
+
+> /dir/to/program/parity.x -d2
+
+- I assumed your system lay on AB plane which means your POSCAR looks like
+
+A(1) A(2) 0
+
+B(1) B(2) 0
+
+0    0    C
+- carefully choose Inversion centre. I sugguest you put your inversion centre EXACTLY at (000).
+
 ## warning:
 - Now this code is not tested in magnetic system yet!
-- 2D materials not support yet!
 - Setting LWAVE=.TRUE. in your INCAR and remaining WAVECAR.
 - Target k point included in your KPIONTS
 - Your system DOSE have Inversion Symmetry.
 - Exact Inverstion Symmetry Coordinate corresponding to POSCAR.
+- You need rm GCOEFF.txt after redo vasp calculation.
 
 ## tips
 - You may run a non-scf calculation which has few kpoints ( target K included of course!) after scf calculation.
