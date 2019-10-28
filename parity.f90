@@ -1,5 +1,6 @@
-subroutine parity
+subroutine parity(dims)
     implicit none
+    character(2), intent(in) :: dims
     complex, parameter :: zi=(0.000, 0.000)
     integer :: i, j, l, n, m
     real:: V 
@@ -9,7 +10,7 @@ subroutine parity
     real :: a1(3),a2(3),a3(3), b1(3),b2(3),b3(3)
     real :: kcurrent(3)
     real :: ktarget(3)
-    integer :: bandindex, nplane
+    integer :: bandindex, nplane,findk
     complex :: energy
     real :: occ
     integer :: inot,rpt
@@ -20,18 +21,25 @@ subroutine parity
     real :: diff
     complex :: mp
     character :: pos
+    real :: planeR1(3), planeR2(3), pn(3)
 
     
     a1=0.00;a2=0.00;a3=0.00
     b1=0.00;b2=0.00;b3=0.00
+    planeR1=0.00; planeR2=0.00
+    pn=[0.00, 0.00, 1.00]
     rpt=5
     is=[0.00, 0.00, 0.00]
+    findk=0
 
     open(unit=10, file='GCOEFF.txt', status='old')
-    write(*,*) "Specified the target kpoint (kx, ky, kz):"
+    write(*,*) " "
+    write(*,*) ">>>>>>>>> Specified the target kpoint direct (kx, ky, kz):"
     read(*, *) ktarget(1), ktarget(2), ktarget(3)
-    write(*,*) "Specified the Inversion Centre (x, y, z):"
+    write(*,*) " "
+    write(*,*) ">>>>>>>>> Specified the Inversion Centre Direct (x, y, z):"
     read(*,*) is(1), is(2), is(3)
+    write(*,*) " "
     read(10, *) nspin
     read(10, *) nkpt
     read(10, *) nband
@@ -66,12 +74,16 @@ subroutine parity
         diff = sqrt((kcurrent(1)-ktarget(1))**2+(kcurrent(2)-ktarget(2))**2&
                      +(kcurrent(3)-ktarget(3))**2)
         if ( diff<=1d-5 ) then ! if the current kpt is target kpt
+            findk=1
             write(*, *) 'current k point:', kcurrent
-            write(*, *) 'target k point:', ktarget
+            write(*, *) ' target k point:', ktarget
             write(*,*) "#band index, parity, wf(+r)/wf(-r)"
             do l=1, nband
                 do m=1, rpt
                     call rvector(r0)
+                    if ( dims.eq.'d2' ) then
+                        r0(3) = is(3)
+                    end if
                     call wavefun(Gvector(l,1:nplane,:),coeff(l,1:nplane),nplane,kcurrent, r0, is, V, psi1, psi2)
                     parityresult(m, l, 1)= psi1
                     parityresult(m, l, 2)= psi2
@@ -96,9 +108,15 @@ subroutine parity
         end if ! if kcurrent in ktarget
     end do ! i=1, npkt
     close(10)
-    write(*,*)"### IF the parity of bands are not +/- or not showing "
-    write(*,*)"### or wf(+)/wf(-) are not around +/-(1., i 0.) then "
-    write(*,*)"### you need reconsider the INVERSION CENTRE coordinate!"
+    if ( findk.eq.0 ) then
+        write(*,*)"Target k points not included in your VASP calculation!"
+        write(*,*)"1. Check and Modify KPOINTS file;"
+        write(*,*)"2. Redo nonscf vasp calculation;"
+        write(*,*)"3. Remove GCOEFF.txt file."
+        write(*,*)"IF the parity of bands are not +/- or not showing "
+        write(*,*)"or psi(+)/psi(-) not +/- (1., i0.)"
+        write(*,*)"you may be reconsider the INVERSION CENTER!"
+    endif
 end subroutine parity
 
 subroutine wavefun(G, C, npl, k ,r0, is, v, psi1, psi2)
