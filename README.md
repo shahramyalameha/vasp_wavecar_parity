@@ -26,19 +26,19 @@ It already has a precompiled excutable program "parity.x", or you may compile by
 and running by
 > /dir/to/program/parity.x
 
-## Using 2D version
+## Using 2D
 
-- The 2d version control by parameter '-d2', running
+- The 2d system parity calculation control by parameter '-d2', running
 
 > /dir/to/program/parity.x -d2
 
 - I assumed your system lay on AB plane which means your POSCAR looks like
 
-A(1) A(2) 0
+"A(1) A(2) 0"
 
-B(1) B(2) 0
+"B(1) B(2) 0"
 
-0    0    C
+"0    0    C"
 - carefully choose Inversion centre. I sugguest you put your inversion centre EXACTLY at (000).
 
 ## warning:
@@ -51,7 +51,7 @@ B(1) B(2) 0
 
 ## tips
 - You may run a non-scf calculation which has few kpoints ( target K included of course!) after scf calculation.
-- About INVERSION SYMMETRY, usually it's not locate in (0,0,0). So you should carefully check it's coordinate according to POSCAR or you'll get wrong result.
+- About INVERSION SYMMETRY, usually it's not locate in (0,0,0), although I sugguest you put it at 000. You should carefully check it's coordinate according to POSCAR or you'll get wrong result.
 - For the case considering soc, if the system has time reversal symmetry then each band is doubly degenerate and only one need to take into count. 
 
 ## example
